@@ -53,6 +53,7 @@ type Config struct {
 		Port int    `yaml:"port"`
 		User string `yaml:"user"`
 		Pass string `yaml:"pass"`
+		Subject string `yaml:"subject"`
 	} `yaml:"imap"`
 
 	HomeAssistant struct {
@@ -106,6 +107,9 @@ func validateConfig(cfg Config) error {
 	}
 	if cfg.IMAP.Pass == "" {
 		return errors.New("missing imap.pass")
+	}
+	if cfg.IMAP.Subject == "" {
+		cfg.IMAP.Subject = "[EON-W1000]"
 	}
 	if cfg.HomeAssistant.URL == "" {
 		return errors.New("missing homeassistant.url")
@@ -510,7 +514,7 @@ func fetchAttachmentsViaIMAP(cfg Config, saveDir string) ([]string, error) {
 		WithoutFlags: []string{imap.SeenFlag},
 		Header: textproto.MIMEHeader{
 			"From":    {"noreply@eon.com"},
-			"Subject": {"[EON-W1000]"},
+			"Subject": {cfg.IMAP.Subject},
 		},
 	}
 
